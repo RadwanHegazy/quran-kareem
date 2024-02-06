@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+    <link rel="stylesheet" href="style.css">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+</head>
+<body>
+    
+    <div class="qr">
+        <div id="qrCode"></div>
+        <h1 class="title hide"></h1>
+        <div class="load"></div>
+    </div>
+
+    <button id="change">التالي</button>
+
+    
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    <script>
+
+        
+        var endpoint = 'http://api.alquran.cloud/v1/quran';
+        var loader = document.querySelector('.load');
+        
+        
+        let current_surah_index = 0;
+        let current_ayah_index = 0;
+        
+        let max_ayah_index ;
+        let ayha ;
+
+        function fetch_all_ayah(surah){
+            var text = '';
+            let counter = 0;
+            surah.forEach(s=>{
+                counter++
+                text +=  s.text + `(${counter})`
+            })
+
+            var element = `<p class='quran-text'>${text}</p>`
+            document.querySelector('.qr').innerHTML = element;
+            current_surah_index++
+        }
+
+        function generate_aya (data){
+            var get_all_surah = data.data.surahs;
+            var current_surah = get_all_surah[current_surah_index];
+            
+            fetch_all_ayah(current_surah.ayahs)
+        }
+
+        function myDisplay(data){
+            
+            var get_rand_ayah = generate_aya(data);
+            
+            var title = document.querySelector('.title');
+
+
+            
+            loader.classList.add('hide');
+            
+        }
+
+        let d ;
+        async function getText() {
+            let x = await fetch(endpoint);
+            let y = await x.json();
+            d = y;
+            myDisplay(y);
+          }
+
+
+
+          getText();
+
+          var changeBtn = document.getElementById('change');
+          
+          changeBtn.addEventListener('click',function(){
+            generate_aya(d)
+          });
+
+    </script>
+
+</body>
+</html>
